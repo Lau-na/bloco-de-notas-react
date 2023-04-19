@@ -1,0 +1,32 @@
+/* ===== Scrollbar CSS ===== */
+
+.card {
+  height: 250px;
+  border-radius: 10px;
+}
+
+/* Firefox */
+.card-body {
+  overflow-y: scroll;
+  scrollbar-width: auto;
+  scrollbar-color: #383838 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+.card-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.card-body::-webkit-scrollbar-track {
+  background: #ffffff00;
+}
+
+.card-body::-webkit-scrollbar-thumb {
+  background-color: #383838;
+  border-radius: 10px;
+  border: 3px solid #ffffff00;
+}
+
+.card-text {
+  white-space: pre-line;
+}
