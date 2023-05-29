@@ -4,12 +4,14 @@ import Icon from "../components/icon";
 import Category from "../modals/category";
 import service from "../services/categories";
 import SuccessToast from "../components/toasts/success";
+import ErrorToast from "../components/toasts/error";
 
 export default function Categories() {
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
   const [categories, setCategories] = useState([]);
   const [successToastMessage, setSuccessToastMessage] = useState();
+  const [errorToastMessage, setErrorToastMessage] = useState();
   const [loadingId, setLoadingId] = useState();
   const [firstLoading, setFirstLoading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,9 +35,7 @@ export default function Categories() {
     setShowModal(false);
     setSelectedCategory();
     setSuccessToastMessage(
-      `Categoria ${category.description} ${
-        category.id ? "atualizada" : "inserida"
-      } com sucesso`
+      `Categoria ${category.description} ${category.id ? "atualizada" : "inserida"} com sucesso`
     );
     await load();
   };
@@ -46,27 +46,24 @@ export default function Categories() {
   };
 
   const deleteCategory = async (category) => {
-    setLoadingId(category.id);
-    await service.delete(category.id);
-    setLoadingId();
-    await load();
-    setSuccessToastMessage(
-      `Categoria ${category.description} removida com sucesso`
-    );
+    try {
+      setLoadingId(category.id);
+      await service.delete(category.id);
+      setLoadingId();
+      await load();
+      setSuccessToastMessage(`Categoria ${category.description} removida com sucesso`);
+    } catch (error) {
+      setLoadingId();
+      setErrorToastMessage(error.response.data.message);
+    }
   };
 
   return (
     <div>
-      <SuccessToast
-        message={successToastMessage}
-        onClose={() => setSuccessToastMessage()}
-      />
+      <SuccessToast message={successToastMessage} onClose={() => setSuccessToastMessage()} />
+      <ErrorToast error={errorToastMessage} onClose={() => setErrorToastMessage()} />
       {showModal && (
-        <Category
-          category={selectedCategory}
-          onSave={handleSave}
-          onHide={handleHide}
-        />
+        <Category category={selectedCategory} onSave={handleSave} onHide={handleHide} />
       )}
       <div className="d-flex justify-content-between">
         <div className="d-flex">

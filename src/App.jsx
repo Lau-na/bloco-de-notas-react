@@ -1,32 +1,27 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Container } from "react-bootstrap";
 
-import Header from "./components/header/header";
-
+import { Template } from "./components/template";
 import Notes from "./pages/notes";
 import Categories from "./pages/categories";
+import Login from "./pages/login";
+import Users from "./pages/users";
+
+import getUserRole from "./components/token";
 
 import GlobalSearchContext from "./contexts/globalSearchContext";
 
 function App() {
   const [globalSearch, setGlobalSearch] = useState("");
+  const role = getUserRole();
   return (
     <GlobalSearchContext.Provider value={{ globalSearch, setGlobalSearch }}>
-      <div className="h-100">
-        <Header />
-        <div className="h-100 py-4">
-          <Container
-            className="bg-white p-5 shadow"
-            style={{ minHeight: "85%" }}
-          >
-            <Routes>
-              <Route path="/" element={<Notes />} />
-              <Route path="/categories" element={<Categories />} />
-            </Routes>
-          </Container>
-        </div>
-      </div>
+      <Routes>
+        <Route path="/" element={<Template page={Notes} />} />
+        <Route path="/categories" element={<Template page={Categories} />} />
+        {role === "admin" && <Route path="/users" element={<Template page={Users} />} />}
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </GlobalSearchContext.Provider>
   );
 }

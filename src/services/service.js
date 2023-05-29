@@ -1,6 +1,6 @@
 import axios from "axios";
 
-function sleep(milliseconds) {
+export function sleep(milliseconds) {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
@@ -11,6 +11,9 @@ export default class Service {
     this.axios = axios.create({
       baseURL: process.env.REACT_APP_API_URL + "/" + endpoint,
       timeout: 2000,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
   }
 

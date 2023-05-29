@@ -6,7 +6,7 @@ import service from "../services/notes";
 
 export default function Note({ note, onSave, onHide }) {
   const [title, setTitle] = useState(note?.title ?? "");
-  const [category, setCategory] = useState(note?.category ?? "");
+  const [categoryId, setCategoryId] = useState(note?.category?.id ?? 0);
   const [text, setText] = useState(note?.text ?? "");
   const [categories, setCategories] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -14,8 +14,8 @@ export default function Note({ note, onSave, onHide }) {
 
   const resetValues = () => {
     setTitle("");
-    setCategory("");
     setText("");
+    setCategoryId(0);
   };
 
   useEffect(() => {
@@ -36,7 +36,13 @@ export default function Note({ note, onSave, onHide }) {
   const handleSubmit = async () => {
     if (validateFields()) {
       setLoading(true);
-      const payload = { ...note, title, category, text, date: new Date() };
+      const payload = {
+        ...note,
+        title,
+        categoryId,
+        text,
+        date: new Date(),
+      };
       await save(payload);
       setLoading(false);
       await onSave(payload);
@@ -50,7 +56,7 @@ export default function Note({ note, onSave, onHide }) {
       errors.push("Título é obrigatório.");
     }
 
-    if (category == "") {
+    if (categoryId === 0) {
       errors.push("Categoria é obrigatória.");
     }
 
@@ -64,7 +70,7 @@ export default function Note({ note, onSave, onHide }) {
 
   useEffect(() => {
     if (errors.length > 0) setErrors([]);
-  }, [title, category, text]);
+  }, [title, categoryId, text]);
 
   return (
     <Modal
@@ -75,9 +81,7 @@ export default function Note({ note, onSave, onHide }) {
       }}
     >
       <Modal.Header closeButton>
-        <Modal.Title>
-          {note ? `Editando Anotação ${note.title}` : "Nova Anotação"}
-        </Modal.Title>
+        <Modal.Title>{note ? `Editando Anotação ${note.title}` : "Nova Anotação"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -96,13 +100,9 @@ export default function Note({ note, onSave, onHide }) {
           <Form.Group className="mb-2">
             <Form.Label htmlFor="category">Categoria:</Form.Label>
             <Form.Select
-              value={category ? category.id : 0}
+              value={categoryId}
               onChange={(event) => {
-                const id = event.target.value;
-                const category = categories.find(
-                  (category) => category.id === id
-                );
-                setCategory(category);
+                setCategoryId(parseInt(event.target.value));
               }}
             >
               <option key={0} value={0} disabled>
